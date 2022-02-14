@@ -3,6 +3,7 @@ import React from 'react';
 import { AuthProvider } from './src/context/AuthContext';
 import { StackNavigator } from './src/navigation/navigator';
 import Toast from 'react-native-toast-message';
+import { ProductsProvider } from './src/context/ProductsContext';
 
 interface Props { }
 
@@ -10,7 +11,9 @@ interface Props { }
 const AppState = ({ children }: any) => {
   return (
     <AuthProvider>
-      {children}
+      <ProductsProvider>
+        {children}
+      </ProductsProvider>
     </AuthProvider>
   )
 }

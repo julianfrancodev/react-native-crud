@@ -1,15 +1,18 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import { View, Text, Platform, KeyboardAvoidingView, Keyboard } from 'react-native';
 import { loginStyles } from '../theme/loginTheme';
 import { TouchableOpacity, TextInput } from 'react-native-gesture-handler';
 import LogoD from '../components/LogoD';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useForm } from '../hooks/useForm';
+import { AuthContext } from '../context/AuthContext';
 
 interface Props extends StackScreenProps<any, any> {}
 
 function RegisterScreen(props: Props) {
     const {navigation} = props;
+
+    const {signUp} = useContext(AuthContext);
 
     const { onChange, email, password, name } = useForm({
         name: '',
@@ -21,6 +24,7 @@ function RegisterScreen(props: Props) {
     const onRegister = () => {
         console.log({email, password, name});
         Keyboard.dismiss();
+        signUp({correo: email,nombre: name, password})
     }
 
     return (
