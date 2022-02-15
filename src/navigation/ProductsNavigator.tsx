@@ -16,17 +16,27 @@ function ProductsNavigator(props: Props) {
     const { } = props
 
     return (
-        <Stack.Navigator>
+        <Stack.Navigator
+            screenOptions={{
+                cardStyle:{
+                    backgroundColor: 'white'
+                },
+                headerStyle:{
+                    elevation: 0, 
+                    shadowColor: 'transparent'
+                }
+            }}
+        >
             <Stack.Screen 
             name="ProductsScreen"
              component={ProductsScreen}
-             options={{title: 'Productos'}}
+             options={{title: 'Productos', headerTitleAlign: 'center'}}
               />
 
             <Stack.Screen 
             name="ProductScreen"
              component={ProductScreen}
-             options={{title: 'Producto'}}
+             options={{title: 'Producto',  headerTitleAlign: 'center'}}
               />
 
         </Stack.Navigator>
