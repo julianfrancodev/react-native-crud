@@ -26,31 +26,49 @@ export const ProductsProvider = ({ children }: any) => {
     useEffect(() => {
 
         loadProducts();
-    
+
     }, [])
-    
+
 
 
     const loadProducts = async () => {
 
         const resp = await cafeApi.get<ProductsResponse>('/productos?limite=50');
 
-        // setproducts([...products, ...resp.data.productos])
         setproducts([...resp.data.productos])
 
     }
 
     const addProduct = async (categoryId: string, name: string) => {
 
+
+        const resp = await cafeApi.post<Producto>('/productos', { nombre: name, categoria: categoryId });
+
+        setproducts([...products, resp.data])
+
+        return resp.data;
+
+
     }
     const updateProduct = async (categoryId: string, name: string, productId: string) => {
+
+        const resp = await cafeApi.put<Producto>(`/productos/${productId}`, { nombre: name, categoria: categoryId });
+
+
+        setproducts(products.map( (prod)=>{
+            return (prod._id === resp.data._id) ? resp.data : prod;
+        }))
 
     }
     const deleteProdcut = async (productId: string) => {
 
     }
-    const loadProductById = async (productId: string) => {
-        throw new Error('Not implemented')
+    const loadProductById = async (productId: string): Promise<Producto> => {
+        const resp = await cafeApi.get(`/productos/${productId}`);
+
+        return resp.data;
+
+
     }
     const uploadImage = async (data: any, id: string) => {
 
