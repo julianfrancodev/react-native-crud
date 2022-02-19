@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react'
-import { View, Text, StyleSheet, Button, Image } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react'
+import { View, Text, StyleSheet, Button, Image, } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ProductsStackParams } from '../navigation/ProductsNavigator';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
@@ -7,6 +7,8 @@ import { Picker } from '@react-native-picker/picker';
 import { useCategories } from '../hooks/useCategories';
 import { useForm } from '../hooks/useForm';
 import { ProductsContext } from '../context/ProductsContext';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+
 
 interface Props extends StackScreenProps<ProductsStackParams, 'ProductScreen'> { }
 
@@ -14,6 +16,8 @@ function ProductScreen(props: Props) {
     const { route, navigation } = props;
 
     const { name = '', id = '' } = route.params;
+
+    const [tempUri, settempUri] = useState<string>();
 
     const { loadProductById, addProduct, updateProduct } = useContext(ProductsContext)
 
@@ -55,17 +59,36 @@ function ProductScreen(props: Props) {
     }
 
 
-    const saveOrUpdate = async ()=>{
-        if(id.length > 0 ){
-            
-            updateProduct(categoriaId,nombre,id)
-            
-        }else{
-        
+    const saveOrUpdate = async () => {
+        if (id.length > 0) {
+
+            updateProduct(categoriaId, nombre, id)
+
+        } else {
+
             const tempCategoriaId = categoriaId || categories[0]._id
-          const newProduct =  await addProduct(tempCategoriaId, nombre);
-          onChange(newProduct.id, '_id');
+            const newProduct = await addProduct(tempCategoriaId, nombre);
+            onChange(newProduct.id, '_id');
         }
+    }
+
+
+    const takePhoto = () => {
+        launchCamera({ mediaType: 'photo', quality: 0.5 }, (resp) => {
+            if (resp.didCancel) return;
+
+            if (!resp.assets![0].uri!) return;
+
+            settempUri(resp.assets![0].uri);
+
+        });
+    }
+
+
+    const getImageFromLibrary = () => {
+        launchImageLibrary({ mediaType: 'photo' }, (resp) => {
+            console.log(resp);
+        })
     }
 
 
@@ -104,27 +127,27 @@ function ProductScreen(props: Props) {
                 />
 
                 {
-                    (_id.length > 0) &&
+                    (id.length > 0) &&
                     <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
 
 
-                    <Button
-                        title='Camara'
-                        onPress={() => []}
+                        <Button
+                            title='Camara'
+                            onPress={() => takePhoto()}
 
-                    />
-                    <Button
-                        title='Galeria'
-                        onPress={() => []}
+                        />
+                        <Button
+                            title='Galeria'
+                            onPress={() => getImageFromLibrary()}
 
-                    />
-                </View>
+                        />
+                    </View>
 
                 }
 
-               
+
                 {
-                    (img.length > 0) &&
+                    (img.length > 0 && !tempUri) &&
 
                     <Image
                         source={{ uri: img }}
@@ -135,6 +158,18 @@ function ProductScreen(props: Props) {
                     />
                 }
 
+
+                {
+                    (tempUri) &&
+
+                    <Image
+                        source={{ uri: tempUri }}
+                        style={{
+                            width: '100%',
+                            height: 300
+                        }}
+                    />
+                }
                 {/* Mostar Imagen Temporal */}
 
 

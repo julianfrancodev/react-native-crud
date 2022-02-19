@@ -5,6 +5,7 @@ import cafeApi from '../api/cafeApi';
 
 
 type ProductsContextProps = {
+    isLoading: boolean,
     products: Producto[],
     loadProducts: () => Promise<any>
     addProduct: (categoryId: string, name: string) => Promise<any>
@@ -21,7 +22,7 @@ export const ProductsProvider = ({ children }: any) => {
 
 
     const [products, setproducts] = useState<Producto[]>([]);
-
+    const [isLoading, setisLoading] = useState(false);
 
     useEffect(() => {
 
@@ -34,8 +35,10 @@ export const ProductsProvider = ({ children }: any) => {
     const loadProducts = async () => {
 
         const resp = await cafeApi.get<ProductsResponse>('/productos?limite=50');
-
+        setisLoading(true);
         setproducts([...resp.data.productos])
+
+        setisLoading(false);
 
     }
 
@@ -82,7 +85,8 @@ export const ProductsProvider = ({ children }: any) => {
             updateProduct,
             deleteProdcut,
             loadProductById,
-            uploadImage
+            uploadImage,
+            isLoading
         }}>
             {children}
         </ProductsContext.Provider>

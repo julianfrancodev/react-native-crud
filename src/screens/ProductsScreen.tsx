@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import { View, Text, StyleSheet } from 'react-native';
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+import { View, Text, StyleSheet, RefreshControl, FlatList, TouchableOpacity } from 'react-native';
 import { ProductsContext } from '../context/ProductsContext';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ProductsStackParams } from '../navigation/ProductsNavigator';
@@ -10,7 +9,7 @@ interface Props extends StackScreenProps<ProductsStackParams, 'ProductsScreen'> 
 function ProductsScreen(props: Props) {
     const { navigation } = props;
 
-    const { products } = useContext(ProductsContext);
+    const { products, loadProducts, isLoading } = useContext(ProductsContext);
 
     useEffect(() => {
 
@@ -31,9 +30,20 @@ function ProductsScreen(props: Props) {
     }, [])
 
 
+    const onRefresth = async () =>{
+        await loadProducts();
+    }
+
+
     return (
         <View style={{ flex: 1, marginHorizontal: 10 }}>
             <FlatList
+                refreshControl={
+                    <RefreshControl
+                        onRefresh={onRefresth}
+                        refreshing={isLoading}
+                    />
+                }
                 data={products}
                 renderItem={({ item }) => (
                     <TouchableOpacity
@@ -49,6 +59,7 @@ function ProductsScreen(props: Props) {
                 ItemSeparatorComponent={() => (
                     <View style={styles.itemSeparator} />
                 )}
+                showsVerticalScrollIndicator={false}
             />
         </View>
     )
