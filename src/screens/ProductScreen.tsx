@@ -19,7 +19,7 @@ function ProductScreen(props: Props) {
 
     const [tempUri, settempUri] = useState<string>();
 
-    const { loadProductById, addProduct, updateProduct } = useContext(ProductsContext)
+    const { loadProductById, addProduct, updateProduct, uploadImage } = useContext(ProductsContext)
 
     const { categories, isLoading } = useCategories();
 
@@ -80,15 +80,20 @@ function ProductScreen(props: Props) {
             if (!resp.assets![0].uri!) return;
 
             settempUri(resp.assets![0].uri);
-
+            uploadImage(resp, id);
         });
     }
 
 
     const getImageFromLibrary = () => {
-        launchImageLibrary({ mediaType: 'photo' }, (resp) => {
-            console.log(resp);
-        })
+        launchCamera({ mediaType: 'photo', quality: 0.5 }, (resp) => {
+            if (resp.didCancel) return;
+
+            if (!resp.assets![0].uri!) return;
+
+            settempUri(resp.assets![0].uri);
+            uploadImage(resp, id);
+        });
     }
 
 
